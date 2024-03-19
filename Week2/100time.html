@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Button Click Challenge</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: rgb(100, 100, 100); /* Initial color: RGB (100, 100, 100) */
+        transition: background-color 1s ease; /* Gradual background color change */
+    }
+    #container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    button {
+        padding: 15px 30px;
+        font-size: 18px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease; /* Smooth button hover effect */
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    #counter {
+        text-align: center;
+        font-size: 20px;
+        margin-top: 20px;
+    }
+    #timer {
+        text-align: center;
+        font-size: 20px;
+    }
+</style>
+</head>
+<body>
+<div id="container">
+    <button id="clickButton">Click Me</button>
+</div>
+<p id="counter">Number of Clicks: 0</p>
+<p id="timer">Time Left: 20 seconds</p>
+
+<script>
+    let clickCount = 0;
+    let startTime = null;
+    let timerInterval = null;
+
+    function updateTimer() {
+        const currentTime = new Date();
+        const elapsedTime = (currentTime - startTime) / 1000; // Time elapsed in seconds
+        const timeLeft = Math.max(20 - elapsedTime, 0); // Time left in seconds
+
+        document.getElementById('timer').textContent = `Time Left: ${timeLeft.toFixed(1)} seconds`;
+
+        // Change background color to red gradually as time goes
+        const redValue = Math.min(100, Math.floor((20 - timeLeft) * 5)); // Convert seconds to RGB value (max 100)
+        document.body.style.backgroundColor = `rgb(100, ${100 - redValue}, ${100 - redValue})`; // Set background color
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById('clickButton').textContent = 'Restart';
+            document.getElementById('clickButton').addEventListener('click', restartGame);
+            alert(`Time's up! You clicked the button ${clickCount} times.`);
+        }
+    }
+
+    function handleClick() {
+        clickCount++;
+        document.getElementById('counter').textContent = `Number of Clicks: ${clickCount}`;
+
+        if (clickCount === 1) {
+            startTime = new Date();
+            timerInterval = setInterval(updateTimer, 100); // Update timer every 100 milliseconds
+        }
+
+        if (clickCount === 50) {
+            clearInterval(timerInterval);
+            document.getElementById('clickButton').textContent = 'Restart';
+            document.getElementById('clickButton').addEventListener('click', restartGame);
+            alert(`Congratulations! You clicked the button 50 times in 20 seconds.`);
+        }
+    }
+
+    function restartGame() {
+        clickCount = 0;
+        document.getElementById('counter').textContent = `Number of Clicks: ${clickCount}`;
+        document.getElementById('timer').textContent = 'Time Left: 20 seconds';
+        document.getElementById('clickButton').textContent = 'Click Me';
+        document.body.style.backgroundColor = 'rgb(100, 100, 100)'; // Reset background color to RGB (100, 100, 100)
+        document.getElementById('clickButton').removeEventListener('click', restartGame);
+    }
+
+    document.getElementById('clickButton').addEventListener('click', handleClick);
+</script>
+</body>
+</html>

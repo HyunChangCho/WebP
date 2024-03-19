@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mouse Maze</title>
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+    }
+    #maze {
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        position: relative;
+    }
+    .wall {
+        background-color: #000;
+        position: absolute;
+    }
+    #start {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 10px;
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        z-index: 1;
+    }
+    #destination {
+        width: 20px;
+        height: 20px;
+        background-color: #00f;
+        position: absolute;
+    }
+    #player {
+        width: 20px;
+        height: 20px;
+        background-color: #f00;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+</style>
+</head>
+<body>
+<button id="start">Start</button>
+<div id="maze"></div>
+
+<script>
+    const maze = document.getElementById('maze');
+    const startButton = document.getElementById('start');
+    let player;
+    let destination;
+    let win = false;
+
+    startButton.addEventListener('click', () => {
+        win = false;
+        maze.innerHTML = ''; // Clear previous maze
+
+        // Generate random positions for walls and destination
+        const wallCount = 10 + Math.floor(Math.random() * 10); // Random number of walls
+        for (let i = 0; i < wallCount; i++) {
+            const wall = document.createElement('div');
+            wall.classList.add('wall');
+            wall.style.width = '20px';
+            wall.style.height = '100px';
+            wall.style.top = Math.floor(Math.random() * (maze.clientHeight - 100)) + 'px';
+            wall.style.left = Math.floor(Math.random() * (maze.clientWidth - 20)) + 'px';
+            maze.appendChild(wall);
+        }
+
+        player = document.createElement('div');
+        player.id = 'player';
+        player.style.width = '20px';
+        player.style.height = '20px';
+        player.style.backgroundColor = '#f00';
+        player.style.position = 'absolute';
+        player.style.top = '0px';
+        player.style.left = '0px';
+        maze.appendChild(player);
+
+        destination = document.createElement('div');
+        destination.id = 'destination';
+        destination.style.width = '20px';
+        destination.style.height = '20px';
+        destination.style.backgroundColor = '#00f';
+        destination.style.position = 'absolute';
+        destination.style.top = Math.floor(Math.random() * (maze.clientHeight - 20)) + 'px';
+        destination.style.left = Math.floor(Math.random() * (maze.clientWidth - 20)) + 'px';
+        maze.appendChild(destination);
+
+        player.addEventListener('mousemove', movePlayer);
+    });
+
+    function movePlayer(event) {
+        if (!win) {
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+
+            // Check if the player is inside the maze
+            if (mouseX >= 0 && mouseX <= maze.clientWidth && mouseY >= 0 && mouseY <= maze.clientHeight) {
+                // Check if the player touches the walls
+                const walls = document.querySelectorAll('.wall');
+                for (const wall of walls) {
+                    const rect = wall.getBoundingClientRect();
+                    if (mouseX >= rect.left && mouseX <= rect.right && mouseY >= rect.top && mouseY <= rect.bottom) {
+                        alert('Game Over! You touched a wall.');
+                        return;
+                    }
+                }
+
+                player.style.left = mouseX - player.offsetWidth / 2 + 'px';
+                player.style.top = mouseY - player.offsetHeight / 2 + 'px';
+
+                // Check if the player reaches the destination
+                const rect = destination.getBoundingClientRect();
+                if (mouseX >= rect.left && mouseX <= rect.right && mouseY >= rect.top && mouseY <= rect.bottom) {
+                    win = true;
+                    alert('Congratulations! You reached the destination.');
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>

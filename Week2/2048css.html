@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2048 Game</title>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #fcf8f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .container {
+        border: 20px solid #bbada0;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        overflow: hidden;
+    }
+    
+    .header {
+        background-color: #bbada0;
+        color: #f9f6f2;
+        font-size: 36px;
+        font-weight: bold;
+        padding: 20px;
+        text-align: center;
+    }
+    
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 100px);
+        grid-gap: 10px;
+        padding: 20px;
+    }
+    
+    .cell {
+        width: 100px;
+        height: 100px;
+        background-color: #cdc1b4;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 36px;
+        font-weight: bold;
+        color: #776e65;
+    }
+    
+    #buttons {
+        margin-top: 20px;
+        text-align: center;
+    }
+    
+    button {
+        margin: 5px;
+        padding: 10px 20px;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        background-color: #8f7a66;
+        color: #f9f6f2;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">2048</div>
+    <div class="grid">
+        <div class="cell" id="cell-0"></div>
+        <div class="cell" id="cell-1"></div>
+        <div class="cell" id="cell-2"></div>
+        <div class="cell" id="cell-3"></div>
+        <div class="cell" id="cell-4"></div>
+        <div class="cell" id="cell-5"></div>
+        <div class="cell" id="cell-6"></div>
+        <div class="cell" id="cell-7"></div>
+        <div class="cell" id="cell-8"></div>
+        <div class="cell" id="cell-9"></div>
+        <div class="cell" id="cell-10"></div>
+        <div class="cell" id="cell-11"></div>
+        <div class="cell" id="cell-12"></div>
+        <div class="cell" id="cell-13"></div>
+        <div class="cell" id="cell-14"></div>
+        <div class="cell" id="cell-15"></div>
+    </div>
+    <div id="buttons">
+        <button onclick="move('up')">Up</button>
+        <button onclick="move('down')">Down</button>
+        <button onclick="move('left')">Left</button>
+        <button onclick="move('right')">Right</button>
+        <button onclick="restart()">Restart</button>
+    </div>
+</div>
+
+<script>
+    let cells = [];
+    let gameOver = false;
+
+    function initialize() {
+        cells = Array.from({ length: 16 }, (_, i) => document.getElementById(`cell-${i}`));
+        gameOver = false;
+        resetCells();
+        addRandomNumber();
+        addRandomNumber();
+    }
+
+    function resetCells() {
+        cells.forEach(cell => {
+            cell.textContent = '';
+            cell.style.backgroundColor = '#cdc1b4';
+        });
+    }
+
+    function addRandomNumber() {
+        const emptyCells = cells.filter(cell => !cell.textContent);
+        if (emptyCells.length > 0) {
+            const cell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            cell.textContent = Math.random() < 0.9 ? '2' : '4';
+            cell.style.backgroundColor = '#eee4da';
+        }
+    }
+
+    function move(direction) {
+        if (gameOver) return;
+
+        let moved = false;
+
+        switch (direction) {
+            case 'up':
+                moved = moveUp();
+                break;
+            case 'down':
+                moved = moveDown();
+                break;
+            case 'left':
+                moved = moveLeft();
+                break;
+            case 'right':
+                moved = moveRight();
+                break;
+        }
+
+        if (moved) {
+            addRandomNumber();
+            if (checkGameOver()) {
+                gameOver = true;
+                alert('Game Over!');
+            }
+        }
+    }
+
+    function moveUp() {
+        let moved = false;
+        for (let col = 0; col < 4; col++) {
+            for (let row = 1; row < 4; row++) {
+                if (cells[row * 4 + col].textContent) {
+                    let currentRow = row;
+                    while (currentRow > 0 && !cells[(currentRow - 1) * 4 + col].textContent) {
+                        swap(cells, currentRow * 4 + col, (currentRow - 1) * 4 + col);
+                        currentRow--;
+                        moved = true;
+                    }
+                    if (currentRow > 0 && cells[(currentRow - 1) * 4 + col].textContent === cells[currentRow * 4 + col].textContent) {
+                        cells[(currentRow - 1) * 4 + col].textContent *= 2;
+                        cells[currentRow * 4 + col].textContent = '';
+                        cells[currentRow * 4 + col].style.backgroundColor = '#cdc1b4';
+                        moved = true;
+                    }
+                }
+            }
+        }
+        return moved;
+    }
+
+    function moveDown() {
+        let moved = false;
+        for (let col = 0; col < 4; col++) {
+            for (let row = 2; row >= 0; row--) {
+                if (cells[row * 4 + col].textContent) {
+                    let currentRow = row;
+                    while (currentRow < 3 && !cells[(currentRow + 1) * 4 + col].textContent) {
+                        swap(cells, currentRow * 4 + col, (currentRow + 1) * 4 + col);
+                        currentRow++;
+                        moved = true;
+                    }
+                    if (currentRow < 3 && cells[(currentRow + 1) * 4 + col].textContent === cells[currentRow * 4 + col].textContent) {
+                        cells[(currentRow + 1) * 4 + col].textContent *= 2;
+                        cells[currentRow * 4 + col].textContent = '';
+                        cells[currentRow * 4 + col].style.backgroundColor = '#cdc1b4';
+                        moved = true;
+                    }
+                }
+            }
+        }
+        return moved;
+    }
+
+    function moveLeft() {
+        let moved = false;
+        for (let row = 0; row < 4; row++) {
+            for (let col = 1; col < 4; col++) {
+                if (cells[row * 4 + col].textContent) {
+                    let currentCol = col;
+                    while (currentCol > 0 && !cells[row * 4 + currentCol - 1].textContent) {
+                        swap(cells, row * 4 + currentCol, row * 4 + currentCol - 1);
+                        currentCol--;
+                        moved = true;
+                    }
+                    if (currentCol > 0 && cells[row * 4 + currentCol - 1].textContent === cells[row * 4 + currentCol].textContent) {
+                        cells[row * 4 + currentCol - 1].textContent *= 2;
+                        cells[row * 4 + currentCol].textContent = '';
+                        cells[row * 4 + currentCol].style.backgroundColor = '#cdc1b4';
+                        moved = true;
+                    }
+                }
+            }
+        }
+        return moved;
+    }
+
+    function moveRight() {
+        let moved = false;
+        for (let row = 0; row < 4; row++) {
+            for (let col = 2; col >= 0; col--) {
+                if (cells[row * 4 + col].textContent) {
+                    let currentCol = col;
+                    while (currentCol < 3 && !cells[row * 4 + currentCol + 1].textContent) {
+                        swap(cells, row * 4 + currentCol, row * 4 + currentCol + 1);
+                        currentCol++;
+                        moved = true;
+                    }
+                    if (currentCol < 3 && cells[row * 4 + currentCol + 1].textContent === cells[row * 4 + currentCol].textContent) {
+                        cells[row * 4 + currentCol + 1].textContent *= 2;
+                        cells[row * 4 + currentCol].textContent = '';
+                        cells[row * 4 + currentCol].style.backgroundColor = '#cdc1b4';
+                        moved = true;
+                    }
+                }
+            }
+        }
+        return moved;
+    }
+
+    function swap(arr, i, j) {
+        const temp = arr[i].textContent;
+        arr[i].textContent = arr[j].textContent;
+        arr[j].textContent = temp;
+    }
+
+    function checkGameOver() {
+        if (cells.some(cell => !cell.textContent)) return false;
+
+        for (let i = 0; i < cells.length; i++) {
+            if (i % 4 !== 3 && cells[i].textContent === cells[i + 1].textContent) return false;
+            if (i < 12 && cells[i].textContent === cells[i + 4].textContent) return false;
+        }
+
+        return true;
+    }
+
+    function restart() {
+        resetCells();
+        initialize();
+    }
+
+    initialize();
+</script>
+</body>
+</html>
