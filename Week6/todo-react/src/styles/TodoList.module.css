@@ -1,0 +1,39 @@
+.container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: rgb(192, 231, 226);
+  border-radius: 7px;
+  box-shadow: 0 2px 5px rgba(154, 138, 212, 0.406);
+}
+
+input[type="text"].itemInput {
+  width: 100%;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+button.addButton {
+  padding: 10px;
+  background-color: #97d4b8;
+  color: rgb(35, 74, 53);
+  border: 1px solid #078458;
+  border-radius: 300px;
+  cursor: pointer;
+}
+
+button.addButton:hover {
+  background-color: #566864;
+  color: #000000;
+}
+
+.todoItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.todoText {
+  margin-left: 10px;
+  flex-grow: 1;
+}
